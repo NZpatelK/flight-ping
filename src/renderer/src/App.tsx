@@ -1,6 +1,37 @@
-import React from 'react';
-import FlightCard from './components/FlightCard';
+import { useEffect, useState } from 'react';
+import { getFlightsInBoundary } from './services/flightRadar';
+import { getAirlineNameByIata } from './services/aviationStack';
+
+export default function FlightRadarNearAuckland() {
+  const [nearbyFlights, setNearbyFlights] = useState<any[][]>([]);
+  const [airlineNamesCache, setAirlineNamesCache] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const checkFlights = async () => {
+      try {
+        const allFlights = await getFlightsInBoundary();
+        setNearbyFlights(allFlights);
+
+        // Get unique IATA codes from flights
+        const uniqueIatas = Array.from(
+          new Set(
+            allFlights
+              .map(f => f[14]?.slice(0, 2).toUpperCase())
+              .filter((code): code is string => !!code)
           )
+        );
+
+        // For each unique IATA, fetch airline name if not cached
+        for (const iata of uniqueIatas) {
+          if (!airlineNamesCache[iata]) {
+            const name = await getAirlineNameByIata(iata);
+            setAirlineNamesCache(prev => ({ ...prev, [iata]: name }));
+          }
+        }
+      } catch (err) {
+        console.error('Flight fetch error:', err);
+      }
+    };
 
     checkFlights();
     const interval = setInterval(checkFlights, 10000);

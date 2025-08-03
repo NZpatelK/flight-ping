@@ -1,41 +1,52 @@
-import { useEffect, useState } from 'react'
-import { getFlightStatus } from '../services/aviationStack'
+// components/FlightCard.tsx
+import React from 'react'
+import './FlightCard.css'
 
-export default function FlightCard({ flightIata }: { flightIata: string }) {
-  const [flight, setFlight] = useState<any>(null)
+interface FlightCardProps {
+  id: string | number
+  flightNum?: string
+  origin?: string
+  dest?: string
+  airlineIata?: string
+  airlineName?: string
+  aircraftType?: string
+  logoUrl?: string | null
+}
 
-  useEffect(() => {
-    async function fetchData() {
-      const data = await getFlightStatus(flightIata)
-      setFlight(data)
-    }
-    fetchData()
-  }, [flightIata])
-
-  if (!flight) return <p>Loading...</p>
-
-  const airlineIata = flight.airline?.iata?.toLowerCase() || 'default'
-  const logoUrl = `https://content.airhex.com/content/logos/airlines_${airlineIata}_70_70_t.png`
-
+const FlightCard: React.FC<FlightCardProps> = ({
+  id,
+  flightNum = 'Unknown',
+  origin = 'N/A',
+  dest = 'N/A',
+  airlineIata,
+  airlineName = 'Unknown Airline',
+  logoUrl
+}) => {
   return (
-    <div className="p-4 border rounded shadow w-96">
-      <img
-        src={logoUrl}
-        alt="Airline Logo"
-        className="w-16 h-16 object-contain mb-2"
-        onError={(e) => (e.currentTarget.style.display = 'none')}
-      />
-      <h2 className="text-xl font-bold">
-        {flight.airline.name} — {flight.flight.iata}
-      </h2>
-      <p>
-        From: {flight.departure.airport} ({flight.departure.iata})
-      </p>
-      <p>
-        To: {flight.arrival.airport} ({flight.arrival.iata})
-      </p>
-      <p>Status: {flight.flight_status}</p>
-      <p>Aircraft: {flight.aircraft?.icao || 'Unknown'}</p>
+    <div key={id} className="flight-card">
+      <div>
+        {logoUrl && (
+          <img
+            src={logoUrl}
+            alt={`${airlineName} logo`}
+            className="w-[40px] h-[40px] object-contain rounded mb-2"
+          />
+        )}
+        <p>
+          <strong>Airline Name:</strong> {airlineName}
+        </p>
+        <p>
+          <strong>Flight No:</strong> {flightNum}
+        </p>
+        <p>
+          <strong>Depart:</strong> {origin}
+        </p>
+        <p>
+          <strong>Arrival:</strong> {dest}
+        </p>
+      </div>
     </div>
   )
 }
+
+export default FlightCard

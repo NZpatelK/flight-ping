@@ -46,11 +46,7 @@ export default function FlightRadarNearAuckland() {
 
   return (
     <div className="p-10 bg-blue-400">
-      <FlightCard
-        id="1"
-        logoUrl={'https://content.airhex.com/content/logos/airlines_AA_70_70_t.png'}
-      />
-      {/* <h2 className="text-xl font-bold mb-4">Flights within 2km of Auckland</h2>
+      <h2 className="text-xl font-bold mb-4">Flights within 5km of your location</h2>
       {nearbyFlights.length === 0 ? (
         <p>No flights detected.</p>
       ) : (
@@ -95,7 +91,7 @@ export default function FlightRadarNearAuckland() {
             />
           )
         })
-      )} */}
+      )}
     </div>
   )
 }

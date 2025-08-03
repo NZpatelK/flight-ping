@@ -1,15 +1,17 @@
 import axios from 'axios';
+import {getBoundingBox} from '../utils/distance';
 
 const API_URL = 'https://flight-radar1.p.rapidapi.com/flights/list-in-boundary';
-const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY; // Replace with your actual RapidAPI key
+const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY;
+const location = getBoundingBox(25.21426, 55.45449, 5);
 
 export async function getFlightsInBoundary() {
   const response = await axios.get(API_URL, {
     params: {
-      bl_lat: -36.97779,
-      bl_lng: 174.88440,
-      tr_lat: -36.94175,
-      tr_lng: 174.92960,
+      bl_lat: location.bl_lat,
+      bl_lng: location.bl_lng,
+      tr_lat: location.tr_lat,
+      tr_lng: location.tr_lng,
       limit: 300,
     },
     headers: {

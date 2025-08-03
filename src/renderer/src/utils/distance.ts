@@ -8,3 +8,17 @@ export function getDistanceInKm(lat1: number, lon1: number, lat2: number, lon2: 
     Math.sin(dLon / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
+
+export function getBoundingBox(lat: number, lng: number, radiusKm = 5) {
+  const DEG_LAT_KM = 1 / 111.32; // 1 deg latitude in km
+  const latOffset = radiusKm * DEG_LAT_KM;
+  const lngOffset = radiusKm * (1 / (111.32 * Math.cos((lat * Math.PI) / 180)));
+
+  return {
+    bl_lat: lat - latOffset,
+    bl_lng: lng - lngOffset,
+    tr_lat: lat + latOffset,
+    tr_lng: lng + lngOffset,
+  };
+}
+

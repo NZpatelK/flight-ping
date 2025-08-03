@@ -2,6 +2,10 @@ import { app, shell, BrowserWindow, ipcMain, Notification } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import path from 'path'
+import fs from 'fs'
+import https from 'https'
+import os from 'os'
 
 function createWindow(): void {
   // Create the browser window.
@@ -52,17 +56,26 @@ app.whenReady().then(() => {
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
 
-  ipcMain.on('notify', (_, message: string) => {
-    // console.log('Notification:', message)
-    // new Notification({ title: 'Notification', body: message }).show()
-    if (Notification.isSupported()) {
-      new Notification({ title: 'Notification', body: message }).show()
-      console.log('Notification sent:', message)
-    } else {
-      console.log('Notifications are not supported on this platform')
-    }
+  ipcMain.on('notify', async (_, payload: { title: string; body: string; iconUrl?: string }) => {
+    const { title, body, iconUrl } = payload
 
-    // console.log('Notification sent:', message)
+    try {
+      const iconPath = iconUrl ? await downloadImage(iconUrl) : undefined
+
+      if (Notification.isSupported()) {
+        new Notification({
+          title,
+          body,
+          icon: iconPath
+        }).show()
+
+        console.log('Notification sent:', title, body)
+      } else {
+        console.log('Notifications are not supported on this platform')
+      }
+    } catch (error) {
+      console.error('Failed to load icon:', error)
+    }
   })
 
   createWindow()
@@ -85,3 +98,21 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+function downloadImage(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const filePath = path.join(os.tmpdir(), 'notification-icon.png')
+    const file = fs.createWriteStream(filePath)
+    console.log('Downloading icon from:', filePath)
+    https
+      .get(url, (response) => {
+        response.pipe(file)
+        file.on('finish', () => {
+          file.close()
+          resolve(filePath)
+        })
+      })
+      .on('error', (err) => {
+        fs.unlink(filePath, () => reject(err))
+      })
+  })
+}

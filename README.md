@@ -65,7 +65,7 @@ I'm planning to develop a **mobile version** of Flight Ping so people can get no
 
 ## 📽️ Demo Video
 
-👉 \[Insert your demo video link here]
+👉  [Click to view Video](https://www.linkedin.com/posts/karan-h-patel_flightping-aviation-accessibility-activity-7357927110792896512-lZgi?utm_source=share&utm_medium=member_desktop&rcm=ACoAADBGF6QB0QMDySUwhCV0IdNp7xgY9h60CLQ)
 
 ---
 
